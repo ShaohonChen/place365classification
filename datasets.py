@@ -1,5 +1,6 @@
 import os
-import cv2
+# import cv2
+from PIL import Image
 import numpy as np
 from paddle.io import Dataset
 
@@ -28,38 +29,31 @@ class Place365Dataset256(Dataset):
         self.data_path_list = []
         self.label_list = []
 
-        if mode=='train':
-            data_txt='places365_train_standard.txt'
-            data_root='train/data_256'
-        elif  mode=='val':
-            data_txt='places365_train_standard.txt'
-            data_root='train/data_256'
+        if mode == 'train':
+            data_txt = 'places365_train_standard.txt'
+            data_root = 'train/data_256'
+        elif mode == 'val':
+            data_txt = 'places365_train_standard.txt'
+            data_root = 'train/data_256'
         else:
             raise 'Error mode! (support: train or val)'
 
-        data_txt_path = os.path.join(root_dir, data_root, data_txt)
+        data_txt_path = os.path.join(root_dir, 'filelist', data_txt)
         with open(data_txt_path, 'r') as f:
             lines = f.readlines()
             for line in lines:
                 data_path, category_id = line.split(' ')
+                self.data_path_list.append(os.path.join(root_dir, data_root, data_path[1:]))
+                self.label_list.append(category_id)
 
-
-        self.data_list = []
-        with open(label_path, encoding='utf-8') as f:
-            for line in f.readlines():
-                image_path, label = line.strip().split('\t')
-                image_path = os.path.join(data_dir, image_path)
-                self.data_list.append([image_path, label])
-        # 2. 传入定义好的数据处理方法，作为自定义数据集类的一个属性
         self.transform = transform
 
     def __getitem__(self, index):
         """
         步骤三：实现 __getitem__ 函数，定义指定 index 时如何获取数据，并返回单条数据（样本数据、对应的标签）
         """
-        image_path, label = self.data_list[index]
-        image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-        image = image.astype('float32')
+        image = Image.open(self.data_path_list[index])
+        label = self.label_list[index]
         # 3. 应用数据处理方法到图像上
         if self.transform is not None:
             image = self.transform(image)
@@ -70,11 +64,14 @@ class Place365Dataset256(Dataset):
         """
         步骤四：实现 __len__ 函数，返回数据集的样本总数
         """
-        return len(self.data_list)
+        return len(self.data_path_list)
 
 
 if __name__ == '__main__':
-    datasets = Place365Dataset256('/home/public/datasets/place365/')
+    datasets = Place365Dataset256('/home/public/datasets/place365/',mode='train')
+    for d in datasets:
+        print(d)
+        break
     # # 1. 定义随机旋转和改变图片大小的数据处理方法
     # from paddle.vision.transforms import Compose, RandomRotation
     #
