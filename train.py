@@ -2,23 +2,37 @@ import argparse
 
 import paddle
 import numpy as np
-from paddle.vision.transforms import Normalize
+from paddle.vision import transforms
+
+from datasets import Place365Dataset256
 
 
 def get_arg():
-    parser=argparse.ArgumentParser(description='train place365')
-    parser.add_argument('--epoch',type=int,default=100)
+    parser = argparse.ArgumentParser(description='train place365')
+    parser.add_argument('--data_root', type=str, default='./place365/', help='datasets root')
+    parser.add_argument('--epoch', type=int, default=100, help='epoch number')
+    parser.add_argument('--batch', type=int, default=32, help='batch size')
+    # parser.add_argument('--lr', type=int, default=0.001, help='learning rate')
+    return parser.parse_args()
 
 
+args = get_arg()
+transfrom = transforms.Compose([
+    transforms.RandomHorizontalFlip(0.5),
+    transforms.RandomResizedCrop(224, scale=(0.8, 1.0), ratio=(3. / 4, 4. / 3)),
+    transforms.Normalize(mean=[127.5], std=[127.5]),
+    transforms.ToTensor()
 
-transform = Normalize(mean=[127.5], std=[127.5], data_format='CHW')
+])
+# transform = Normalize(mean=[127.5], std=[127.5], data_format='CHW')
 # 下载数据集并初始化 DataSet
-train_dataset = paddle.vision.datasets.MNIST(mode='train', transform=transform)
-test_dataset = paddle.vision.datasets.MNIST(mode='test', transform=transform)
+train_dataset = Place365Dataset256(args.data_root, mode='train', transform=transfrom)
+test_dataset = Place365Dataset256(args.data_root, mode='val', transform=transfrom)
 
 # 模型组网并初始化网络
-lenet = paddle.vision.models.LeNet(num_classes=10)
-model = paddle.Model(lenet)
+network = paddle.vision.models.resnet50(pretrained=True)
+network.fc = paddle.nn.Linear(2048, 365)
+model = paddle.Model(network)
 
 # 模型训练的配置准备，准备损失函数，优化器和评价指标
 model.prepare(paddle.optimizer.Adam(parameters=model.parameters()),
@@ -26,14 +40,14 @@ model.prepare(paddle.optimizer.Adam(parameters=model.parameters()),
               paddle.metric.Accuracy())
 
 # 模型训练
-model.fit(train_dataset, epochs=5, batch_size=64, verbose=1)
+model.fit(train_dataset, epochs=args.epoch, batch_size=args.batch, verbose=1)
 # 模型评估
 model.evaluate(test_dataset, batch_size=64, verbose=1)
 
 # 保存模型
-model.save('./output/mnist')
+model.save('./save/place365')
 # 加载模型
-model.load('output/mnist')
+model.load('save/place365')
 
 # 从测试集中取出一张图片
 img, label = test_dataset[0]
@@ -45,5 +59,5 @@ out = model.predict_batch(img_batch)[0]
 pred_label = out.argmax()
 print('true label: {}, pred label: {}'.format(label[0], pred_label))
 # 可视化图片
-from matplotlib import pyplot as plt
-plt.imshow(img[0])
+# from matplotlib import pyplot as plt
+# plt.imshow(img[0])

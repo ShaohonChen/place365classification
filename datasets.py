@@ -44,7 +44,7 @@ class Place365Dataset256(Dataset):
             for line in lines:
                 data_path, category_id = line.split(' ')
                 self.data_path_list.append(os.path.join(root_dir, data_root, data_path[1:]))
-                self.label_list.append(category_id)
+                self.label_list.append(int(category_id))
 
         self.transform = transform
 
@@ -57,7 +57,7 @@ class Place365Dataset256(Dataset):
         # 3. 应用数据处理方法到图像上
         if self.transform is not None:
             image = self.transform(image)
-        label = int(label)
+
         return image, label
 
     def __len__(self):
