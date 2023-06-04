@@ -10,9 +10,10 @@ from datasets import Place365Dataset256
 def get_arg():
     parser = argparse.ArgumentParser(description='train place365')
     parser.add_argument('--data_root', type=str, default='./place365/', help='datasets root')
-    parser.add_argument('--epoch', type=int, default=100, help='epoch number')
+    parser.add_argument('--epoch', type=int, default=20, help='epoch number')
     parser.add_argument('--batch', type=int, default=32, help='batch size')
-    # parser.add_argument('--lr', type=int, default=0.001, help='learning rate')
+    parser.add_argument('--lr', type=float, default=1e-4, help='learning rate')
+    parser.add_argument('--num_work', type=int, default=16, help='learning rate')
     return parser.parse_args()
 
 
@@ -37,19 +38,24 @@ train_dataset = Place365Dataset256(args.data_root, mode='train', transform=trans
 test_dataset = Place365Dataset256(args.data_root, mode='val', transform=transfrom_val)
 
 # 模型组网并初始化网络
-network = paddle.vision.models.resnet50(pretrained=True)
-network.fc = paddle.nn.Linear(2048, 365)
+network = paddle.vision.models.resnet18(pretrained=True)
+network.fc = paddle.nn.Linear(512, 365)
 model = paddle.Model(network)
 
 # 模型训练的配置准备，准备损失函数，优化器和评价指标
-model.prepare(paddle.optimizer.Adam(parameters=model.parameters()),
+model.prepare(paddle.optimizer.Momentum(learning_rate=args.lr, parameters=model.parameters()),
               paddle.nn.CrossEntropyLoss(),
               paddle.metric.Accuracy())
 
 # 模型训练
-model.fit(train_dataset, epochs=args.epoch, batch_size=args.batch, verbose=1)
+model.fit(train_dataset, epochs=args.epoch,
+          batch_size=args.batch,
+          verbose=1,
+          save_dir='./save/',
+          save_freq=1,
+          num_workers=args.num_workers)
 # 模型评估
-model.evaluate(test_dataset, batch_size=64, verbose=1)
+model.evaluate(test_dataset, batch_size=32, verbose=1)
 
 # 保存模型
 model.save('./save/place365')
