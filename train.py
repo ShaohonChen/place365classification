@@ -17,17 +17,24 @@ def get_arg():
 
 
 args = get_arg()
-transfrom = transforms.Compose([
+transfrom_train = transforms.Compose([
     transforms.RandomHorizontalFlip(0.5),
     transforms.RandomResizedCrop(224, scale=(0.8, 1.0), ratio=(3. / 4, 4. / 3)),
     transforms.Normalize(mean=[127.5], std=[127.5]),
     transforms.ToTensor()
 
 ])
+
+transfrom_val = transforms.Compose([
+    transforms.CenterCrop((224, 224)),
+    transforms.Normalize(mean=[127.5], std=[127.5]),
+    transforms.ToTensor()
+])
+
 # transform = Normalize(mean=[127.5], std=[127.5], data_format='CHW')
 # 下载数据集并初始化 DataSet
-train_dataset = Place365Dataset256(args.data_root, mode='train', transform=transfrom)
-test_dataset = Place365Dataset256(args.data_root, mode='val', transform=transfrom)
+train_dataset = Place365Dataset256(args.data_root, mode='train', transform=transfrom_train)
+test_dataset = Place365Dataset256(args.data_root, mode='val', transform=transfrom_val)
 
 # 模型组网并初始化网络
 network = paddle.vision.models.resnet50(pretrained=True)
