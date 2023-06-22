@@ -1,8 +1,8 @@
-# Place365 Scene Classification Model
+# Place365 Scene Classification with Paddle
 
 ## Project Introduction
 
-This project is a scene classification open source project based on the PaddlePaddle framework. It has been trained using the Place365 dataset, and it achieved a Top1 accuracy of 53% and a Top10 accuracy of 81% on this dataset.
+This project is a scene classification model using Resnet50 based on the PaddlePaddle framework. It has been trained using the Place365 dataset, and it achieved a Top1 accuracy of 53% and a Top10 accuracy of 81% on this dataset.
 
 ## Installation
 
