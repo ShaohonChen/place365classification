@@ -27,8 +27,9 @@ Here are the steps to install the project:
    ```
 
 ## Usage
+1. Test the model in [![swanhub](https://swanhub.co/assets/blackswan-03af59c5.svg)](https://swanhub.co/shaohon/place365classification/demo) SwanHub.
 
-1. Run the prediction script:
+2. Run the prediction script in local:
 
    ```shell
    python app.py
