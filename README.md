@@ -1,4 +1,5 @@
 # Place365 Scene Classification with Paddle
+Test model in [![SwanHub](https://img.shields.io/static/v1?label=Demo&message=SwanHub&color=blue)](https://swanhub.co/shaohon/place365classification/demo)!
 
 ## Project Introduction
 
@@ -27,7 +28,7 @@ Here are the steps to install the project:
    ```
 
 ## Usage
-1. Test the model in [![swanhub](https://swanhub.co/assets/blackswan-03af59c5.svg)](https://swanhub.co/shaohon/place365classification/demo) SwanHub.
+1. Test the model in [![SwanHub](https://img.shields.io/static/v1?label=Demo&message=SwanHub&color=blue)](https://swanhub.co/shaohon/place365classification/demo)
 
 2. Run the prediction script in local:
 
