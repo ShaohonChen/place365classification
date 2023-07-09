@@ -1,0 +1,11 @@
+build:
+  gpu: false
+  system_packages:
+    - "libgl1-mesa-glx"
+    - "libglib2.0-0"
+  python_version: "3.10"
+  python_packages:
+    - "numpy"
+    - "opencv-python"
+predict:
+  port: 8000
