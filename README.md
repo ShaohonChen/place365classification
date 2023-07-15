@@ -28,17 +28,47 @@ Here are the steps to install the project:
    ```
 
 ## Usage
+
+### Use on SwanHub
+
 you can test the model in [![SwanHub](https://img.shields.io/static/v1?label=Demo&message=SwanHub&color=blue)](https://swanhub.co/shaohon/place365classification/demo)
-or follow the next steps to run locally.
+
+### Run on local machine
+
+Follow the next steps to run locally.
 
 1. Download weights in [download link](https://swanhub.co/shaohon/place365classification/blob/main?path=place365.pdparams)
 and put the file in the project root.
 
 3. Run the prediction script in local:
 
-   ```shell
-   python app.py
-   ```
+```shell
+python app.py
+```
+
+### Deploy local API predict server
+
+You can use [SwanAPI](https://github.com/SwanHubX/SwanAPI/blob/main/README_EN.md) to package the model as an API service.
+
+First, install swanapi using the following command
+
+```shell
+pip install swanapi -i https://pypi.org/simple
+```
+
+Then, you can directly turn the model into a prediction service.
+
+```shell
+python predict.py
+```
+
+You can also build a deep learning inference image with just one command.
+
+```shell
+swanapi build -t my-dl-model
+```
+
+Run ```python tools/post.py``` to test whether the service is online
 
 ## Contributing
 
